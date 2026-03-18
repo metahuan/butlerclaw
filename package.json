@@ -1,0 +1,30 @@
+{
+  "name": "butlerclaw",
+  "version": "2.0.0",
+  "description": "Cross-platform desktop assistant for managing OpenClaw installations",
+  "main": "openclaw_assistant.py",
+  "scripts": {
+    "start": "python openclaw_assistant.py",
+    "test": "pytest tests/ -v",
+    "build": "python scripts/build.py",
+    "release": "python scripts/release.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/butlerclaw.git"
+  },
+  "keywords": [
+    "openclaw",
+    "installer",
+    "assistant",
+    "gui",
+    "tkinter",
+    "python"
+  ],
+  "author": "Butlerclaw Contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/butlerclaw/issues"
+  },
+  "homepage": "https://github.com/yourusername/butlerclaw#readme"
+}

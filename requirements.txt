@@ -1,0 +1,14 @@
+# Core dependencies for Butlerclaw
+# Install with: pip install -r requirements.txt
+
+# No external runtime dependencies required!
+# Butlerclaw uses only Python standard library modules:
+# - tkinter (GUI)
+# - threading (Concurrency)
+# - subprocess (Process management)
+# - json (Configuration)
+# - urllib (HTTP requests)
+# - pathlib (Path handling)
+
+# Optional: For enhanced functionality
+# requests>=2.28.0    # Better HTTP handling (falls back to urllib)

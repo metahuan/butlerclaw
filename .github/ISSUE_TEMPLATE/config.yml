@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Butlerclaw Community Support
+    url: https://github.com/yourusername/butlerclaw/discussions
+    about: Please ask and answer questions here.
+  - name: Security Vulnerability
+    url: https://github.com/yourusername/butlerclaw/security/advisories/new
+    about: Please report security vulnerabilities here.

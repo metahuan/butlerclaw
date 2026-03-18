@@ -1,0 +1,30 @@
+#!/bin/bash
+# 打包 OpenClaw 安装助手 (Linux) - 生成可执行文件
+set -e
+cd "$(dirname "$0")"
+
+echo "========================================"
+echo "  OpenClaw 安装助手 - Linux 打包"
+echo "========================================"
+echo ""
+
+if ! command -v python3 &>/dev/null; then
+    echo "[错误] 未找到 python3"
+    exit 1
+fi
+
+echo "[1/3] 安装打包依赖..."
+python3 -m pip install -q -r requirements-build.txt
+
+echo "[2/3] 开始打包（仅当前平台：Linux）..."
+python3 -m PyInstaller --noconfirm \
+    --onefile \
+    --windowed \
+    --name "OpenClaw安装助手" \
+    openclaw_assistant.py
+
+echo "[3/3] 完成"
+echo ""
+echo "输出: dist/OpenClaw安装助手"
+echo "可直接运行: ./dist/OpenClaw安装助手"
+echo ""

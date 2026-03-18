@@ -1,0 +1,28 @@
+{
+  "update": {
+    "channel": "stable"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com/v1",
+        "apiKey": "YOUR_DEEPSEEK_API_KEY",
+        "api": "openai-completions",
+        "models": [
+          { "id": "deepseek-chat", "name": "DeepSeek Chat" },
+          { "id": "deepseek-reasoner", "name": "DeepSeek Reasoner" }
+        ]
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "GENERATE_A_RANDOM_TOKEN"
+    }
+  }
+}

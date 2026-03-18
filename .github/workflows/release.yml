@@ -1,0 +1,106 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## Changes in this Release
+          
+          Please see [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for full details.
+          
+          ### Downloads
+          - Windows: `Butlerclaw-Windows.exe`
+          - macOS: `Butlerclaw-macOS.dmg`
+          - Linux: `Butlerclaw-Linux.tar.gz`
+        draft: false
+        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+
+  build-and-upload:
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+            asset_name: Butlerclaw-Windows.exe
+            asset_path: dist/OpenClaw安装助手.exe
+          - os: macos-latest
+            target: macos
+            asset_name: Butlerclaw-macOS.zip
+            asset_path: dist/Butlerclaw-macOS.zip
+          - os: ubuntu-latest
+            target: linux
+            asset_name: Butlerclaw-Linux.tar.gz
+            asset_path: dist/Butlerclaw-Linux.tar.gz
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-build.txt
+
+    - name: Build executable (Windows)
+      if: matrix.target == 'windows'
+      run: |
+        python -m PyInstaller OpenClaw安装助手.spec --clean
+
+    - name: Build executable (macOS)
+      if: matrix.target == 'macos'
+      run: |
+        chmod +x build_macos.sh
+        ./build_macos.sh
+        cd dist && zip -r Butlerclaw-macOS.zip Butlerclaw.app
+
+    - name: Build executable (Linux)
+      if: matrix.target == 'linux'
+      run: |
+        chmod +x build_linux.sh
+        ./build_linux.sh
+        cd dist && tar -czf Butlerclaw-Linux.tar.gz Butlerclaw/
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ${{ matrix.asset_path }}
+        asset_name: ${{ matrix.asset_name }}
+        asset_content_type: application/octet-stream

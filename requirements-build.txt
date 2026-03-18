@@ -1,0 +1,11 @@
+# Build dependencies for Butlerclaw
+# Install with: pip install -r requirements-build.txt
+
+# Executable building
+pyinstaller>=6.0.0
+
+# Windows specific
+pywin32>=306; sys_platform == "win32"
+
+# macOS specific
+py2app>=0.28.0; sys_platform == "darwin"
