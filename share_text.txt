@@ -1,0 +1,18 @@
+🎉 发布 Butlerclaw v2.0.0-alpha - OpenClaw 生态管家
+
+为深度 OpenClaw 用户打造的桌面管理工具：
+
+✨ 核心功能：
+• 多实例管理（本地 + SSH/WebSocket 远程）
+• API 成本追踪与预算告警  
+• 团队协作（权限管理、配置同步）
+• 现代化 UI（暗色/亮色主题）
+
+🏗️ 技术栈：Python + ttkbootstrap + WebView
+📦 开源协议：MIT
+
+🔗 GitHub：https://github.com/<your-username>/butlerclaw
+
+诚邀大家体验、反馈和贡献！
+
+#OpenClaw #开源 #Python #AI
