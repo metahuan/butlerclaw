@@ -164,7 +164,14 @@ class CostPanel(ttk.Frame):
         ttk.Label(header, text="💰 成本控制仪表板",
                  font=("Microsoft YaHei", 16, "bold")).pack(side=LEFT)
         
-        ttk.Button(header, text="⚙️ 设置",
+        btn_frame = ttk.Frame(header)
+        btn_frame.pack(side=RIGHT)
+        
+        ttk.Button(btn_frame, text="📊 生成演示数据",
+                  command=self._generate_sample_data,
+                  bootstyle="info" if TTKBOOTSTRAP_AVAILABLE else None).pack(side=RIGHT, padx=(0, 10))
+        
+        ttk.Button(btn_frame, text="⚙️ 设置",
                   command=self._show_settings_dialog,
                   bootstyle="secondary" if TTKBOOTSTRAP_AVAILABLE else None).pack(side=RIGHT)
         
@@ -272,8 +279,11 @@ class CostPanel(ttk.Frame):
         daily_costs = self._get_daily_costs(30)
         
         if not daily_costs:
-            canvas.create_text(width//2, height//2, text="暂无数据",
-                             font=("Microsoft YaHei", 12), fill="#999")
+            canvas.create_text(width//2, height//2 - 20, text="暂无数据",
+                             font=("Microsoft YaHei", 14), fill="#999")
+            canvas.create_text(width//2, height//2 + 10, 
+                             text="点击右上角「生成演示数据」按钮体验功能",
+                             font=("Microsoft YaHei", 10), fill="#666")
             return
         
         # 计算最大值用于缩放
@@ -460,6 +470,13 @@ class CostPanel(ttk.Frame):
                 stats['output'] += record.output_tokens
                 stats['cost'] += record.cost_cny
         
+        # 没有数据时显示提示
+        if not model_stats:
+            empty_label = ttk.Label(self.table_frame, text="暂无数据 - 点击「生成演示数据」按钮",
+                                   font=("Microsoft YaHei", 10), foreground="#999")
+            empty_label.pack(pady=20)
+            return
+        
         # 显示数据
         for model, stats in sorted(model_stats.items(), key=lambda x: x[1]['cost'], reverse=True):
             row = ttk.Frame(self.table_frame)
@@ -558,9 +575,46 @@ class CostPanel(ttk.Frame):
             time.sleep(30)
     
     def _simulate_new_data(self):
-        """模拟新数据 (实际应从 API 获取)"""
-        # 这里仅用于演示，实际应连接到真实的成本数据
-        pass
+        """从 core.cost_tracker 加载真实数据"""
+        # 优先从 core.cost_tracker 获取真实数据
+        tracker = getattr(self.app, "cost_tracker", None) if self.app else None
+        if tracker:
+            try:
+                # 从 tracker 获取最近记录
+                usd_to_cny = 7.2
+                new_records = []
+                for r in getattr(tracker, "_records", []):
+                    ts = getattr(r, "timestamp", datetime.now())
+                    new_records.append(
+                        CostRecord(
+                            timestamp=ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
+                            model=getattr(r, "model", "unknown"),
+                            provider=getattr(r, "provider", "") or "unknown",
+                            api_calls=1,
+                            input_tokens=int(getattr(r, "tokens_input", 0)),
+                            output_tokens=int(getattr(r, "tokens_output", 0)),
+                            cost_cny=float(getattr(r, "cost_usd", 0.0)) * usd_to_cny,
+                        )
+                    )
+                
+                # 合并新记录（避免重复）
+                existing_timestamps = {r.timestamp for r in self.cost_records}
+                for record in new_records:
+                    if record.timestamp not in existing_timestamps:
+                        self.cost_records.append(record)
+                
+                # 限制记录数量（保留最近 30 天）
+                cutoff = datetime.now() - timedelta(days=30)
+                self.cost_records = [
+                    r for r in self.cost_records 
+                    if datetime.fromisoformat(r.timestamp) > cutoff
+                ]
+                
+                # 保存到本地
+                if new_records:
+                    self._save_data()
+            except Exception as e:
+                print(f"从 core.cost_tracker 同步数据失败: {e}")
     
     def _load_data(self):
         """加载数据"""
@@ -614,12 +668,11 @@ class CostPanel(ttk.Frame):
         except Exception as e:
             print(f"加载成本数据失败: {e}")
         
-        # 如果没有数据，生成一些示例数据
-        if not self.cost_records:
-            self._generate_sample_data()
+        # 如果没有数据，显示空状态（不再生成示例数据）
+        # 真实数据应由 API 调用时通过 cost_tracker.record_call() 记录
     
     def _generate_sample_data(self):
-        """生成示例数据"""
+        """生成示例数据（仅用于演示，会保存到本地）"""
         import random
         
         models = ["gpt-4o", "claude-3-5-sonnet", "deepseek-chat"]
@@ -648,6 +701,10 @@ class CostPanel(ttk.Frame):
                     cost_cny=input_cost + output_cost
                 )
                 self.cost_records.append(record)
+        
+        # 保存示例数据到本地
+        self._save_data()
+        print(f"[成本面板] 已生成 {len(self.cost_records)} 条示例数据")
     
     def _save_data(self):
         """保存数据"""

@@ -49,6 +49,11 @@ class TestInstanceManagerEdgeCases(unittest.TestCase):
     
     def test_ssh_without_remote_executor(self):
         """测试未安装远程执行器时的 SSH 执行"""
+        # 该用例不应进行真实网络连接；通过临时关闭远程执行器能力来模拟“未安装依赖”的场景。
+        import core.instance_manager as instance_manager_mod
+        old_flag = getattr(instance_manager_mod, "REMOTE_EXECUTOR_AVAILABLE", False)
+        instance_manager_mod.REMOTE_EXECUTOR_AVAILABLE = False
+
         instance = InstanceInfo(
             id="test-ssh",
             name="SSH测试",
@@ -63,6 +68,11 @@ class TestInstanceManagerEdgeCases(unittest.TestCase):
         
         # 应该提示需要安装依赖
         self.assertFalse(result.success)
+        self.assertIn("pip install", result.stderr)
+        self.assertIn("paramiko", result.stderr)
+
+        # 还原全局标记，避免影响其他用例
+        instance_manager_mod.REMOTE_EXECUTOR_AVAILABLE = old_flag
     
     def test_concurrent_instance_operations(self):
         """测试并发实例操作"""

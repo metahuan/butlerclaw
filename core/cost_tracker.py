@@ -158,14 +158,23 @@ class CostTracker:
         
         with self._lock:
             self._records.append(record)
-            
-            # 检查预算告警
-            self._check_budget_alerts()
+
+        # 检查预算告警（避免在持锁状态下调用会二次加锁的方法）
+        self._check_budget_alerts()
         
         # 保存记录
         self._save_records()
         
         return cost
+
+    def get_records(self, days: Optional[int] = None) -> List[APICallRecord]:
+        """获取调用记录（可选按最近 N 天过滤）"""
+        with self._lock:
+            records = list(self._records)
+        if days is None:
+            return records
+        cutoff_date = datetime.now() - timedelta(days=days)
+        return [r for r in records if r.timestamp >= cutoff_date]
     
     def _calculate_cost(self, model: str, tokens_input: int, tokens_output: int) -> float:
         """计算调用成本"""

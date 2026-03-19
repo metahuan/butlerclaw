@@ -105,18 +105,62 @@ class InstanceManager:
     
     # ========== 实例管理接口 ==========
     
+    def _probe_port(self, host: str, port: int, timeout: float = 1.5) -> bool:
+        """简单 TCP 探测，判断端口是否可达"""
+        try:
+            with socket.create_connection((host, port), timeout=timeout):
+                return True
+        except OSError:
+            return False
+
     def discover_instances(self) -> List[InstanceInfo]:
         """
         发现本地实例
         
-        TODO: 实现完整的进程扫描和配置读取
-        - 扫描 OpenClaw 进程
-        - 读取配置文件中的实例
-        - 扫描工作目录
+        当前实现：
+        - 从 ~/.openclaw/openclaw.json 读取本机 Gateway 配置
+        - 扫描工作目录 ~/.openclaw/workspace 下的工作区
         """
-        instances = []
+        instances: List[InstanceInfo] = []
+
+        # 1) 从 openclaw.json 发现本机 Gateway
+        try:
+            config_path = os.path.join(self.config_dir, "openclaw.json")
+            if os.path.isfile(config_path):
+                with open(config_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+
+                gateway_cfg = (data.get("gateway") or {}) if isinstance(data, dict) else {}
+                port = int(gateway_cfg.get("port", 18789))
+                bind = (gateway_cfg.get("bind") or "loopback").strip() or "loopback"
+                if bind == "loopback":
+                    host = "127.0.0.1"
+                elif bind == "public":
+                    host = "0.0.0.0"
+                else:
+                    host = bind
+
+                online = self._probe_port(host, port)
+                status = InstanceStatus.ONLINE if online else InstanceStatus.OFFLINE
+
+                instances.append(
+                    InstanceInfo(
+                        id="gateway-local",
+                        name="本机 Gateway",
+                        host=host,
+                        port=port,
+                        type=InstanceType.LOCAL,
+                        status=status,
+                        metadata={
+                            "source": "openclaw.json",
+                            "config_path": config_path,
+                        },
+                    )
+                )
+        except Exception as e:
+            print(f"[警告] 读取 openclaw.json 发现实例失败: {e}")
         
-        # 基础实现：扫描工作目录
+        # 2) 扫描工作目录
         workspace_dir = os.path.join(self.config_dir, "workspace")
         if os.path.exists(workspace_dir):
             try:
@@ -124,15 +168,20 @@ class InstanceManager:
                     item_path = os.path.join(workspace_dir, item)
                     if os.path.isdir(item_path):
                         instance_id = f"local-workspace-{item}"
-                        instances.append(InstanceInfo(
-                            id=instance_id,
-                            name=f"工作区: {item}",
-                            host="localhost",
-                            port=0,
-                            type=InstanceType.LOCAL,
-                            status=InstanceStatus.ONLINE,
-                            metadata={"workspace_path": item_path}
-                        ))
+                        instances.append(
+                            InstanceInfo(
+                                id=instance_id,
+                                name=f"工作区: {item}",
+                                host="localhost",
+                                port=0,
+                                type=InstanceType.LOCAL,
+                                status=InstanceStatus.ONLINE,
+                                metadata={
+                                    "workspace_path": item_path,
+                                    "source": "workspace",
+                                },
+                            )
+                        )
             except Exception as e:
                 print(f"[警告] 扫描工作目录失败: {e}")
         

@@ -15,7 +15,7 @@ import time
 import threading
 import subprocess
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, Any
 from dataclasses import dataclass, asdict
 
 try:
@@ -50,6 +50,7 @@ class InstanceInfo:
     host: str
     type: str  # 'local', 'ssh', 'tailscale'
     status: str  # 'running', 'stopped', 'offline', 'error'
+    port: int = 0
     version: str = ""
     cpu_percent: float = 0.0
     memory_mb: float = 0.0
@@ -60,6 +61,7 @@ class InstanceInfo:
     task_count: int = 0
     last_seen: Optional[datetime] = None
     error_message: str = ""
+    metadata: Dict[str, Any] = None
     
     # 连接配置
     ssh_user: str = ""
@@ -122,8 +124,15 @@ class InstanceCard(ttk.Frame):
         status_label.pack(side=RIGHT)
         
         # 主机信息
-        ttk.Label(container, text=f"主机: {self.instance.host}", 
-                 foreground="#666").pack(anchor=W, pady=(5, 0))
+        host_port = f"{self.instance.host}"
+        # 一些实例（如 Gateway）会带上端口
+        if getattr(self.instance, "port", 0):
+            host_port = f"{self.instance.host}:{self.instance.port}"
+        ttk.Label(
+            container,
+            text=f"主机: {host_port}",
+            foreground="#666",
+        ).pack(anchor=W, pady=(5, 0))
         
         # 指标行
         metrics = ttk.Frame(container)
@@ -164,6 +173,16 @@ class InstanceCard(ttk.Frame):
             ttk.Label(metrics, text=f"错误: {self.instance.error_message}",
                      foreground="#EF4444", wraplength=400).pack(side=LEFT)
         
+        # 来源标签
+        source = getattr(self.instance, "metadata", {}).get("source") if hasattr(self.instance, "metadata") else None
+        if source:
+            ttk.Label(
+                container,
+                text=f"来源: {source}",
+                foreground="#9CA3AF",
+                font=("Microsoft YaHei", 9),
+            ).pack(anchor=W, pady=(0, 4))
+
         # 操作按钮
         actions = ttk.Frame(container)
         actions.pack(fill=X, pady=(5, 0))
@@ -330,7 +349,8 @@ class InstancesPanel(ttk.Frame):
         ttk.Label(self.detail_frame, text="选择一个实例查看详情",
                  foreground="#999").pack(expand=True)
         
-        # 初始刷新
+        # 初始加载一次实例列表并刷新
+        self._load_instances()
         self._refresh_list()
     
     def _load_instances(self):
@@ -357,6 +377,10 @@ class InstancesPanel(ttk.Frame):
                 for ci in core_instances:
                     c_status = getattr(getattr(ci, "status", None), "value", "unknown")
                     c_type = getattr(getattr(ci, "type", None), "value", "local")
+                    meta = getattr(ci, "metadata", {}) or {}
+                    source = meta.get("source") or (
+                        "openclaw.json" if ci.id == "gateway-local" else "instances.json"
+                    )
                     self.instances.append(
                         InstanceInfo(
                             id=ci.id,
@@ -365,6 +389,11 @@ class InstancesPanel(ttk.Frame):
                             type=type_map.get(c_type, "local"),
                             status=status_map.get(c_status, "stopped"),
                             version=getattr(ci, "version", "") or "",
+                            metadata={
+                                "source": source,
+                                "workspace_path": meta.get("workspace_path", ""),
+                                "config_path": meta.get("config_path", ""),
+                            },
                         )
                     )
 
@@ -461,6 +490,11 @@ class InstancesPanel(ttk.Frame):
         manager = getattr(self.app, "instance_manager", None) if self.app else None
         if manager:
             try:
+                # 触发一次核心层的自动发现（包括 openclaw.json / workspace）
+                try:
+                    manager.discover_instances()
+                except Exception as e:
+                    print(f"核心实例自动发现失败（已忽略）：{e}")
                 self._load_instances()
                 self._refresh_list()
                 return

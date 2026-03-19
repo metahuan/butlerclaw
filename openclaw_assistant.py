@@ -1304,7 +1304,8 @@ class DiagnosePanel(BasePanel):
 
         list_container = ttk.Frame(overview_frame)
         list_container.pack(fill=tk.BOTH, expand=True)
-        self._items_canvas = tk.Canvas(list_container, height=180)
+        # 调低高度，让下方区域（包含“分析错误”按钮）更容易出现在视野中
+        self._items_canvas = tk.Canvas(list_container, height=140)
         items_scrollbar = ttk.Scrollbar(
             list_container, orient=tk.VERTICAL, command=self._items_canvas.yview
         )
@@ -1321,15 +1322,110 @@ class DiagnosePanel(BasePanel):
 
         # 详细结果 / 日志区域
         detail_frame = ttk.LabelFrame(self, text="诊断详情", padding=4)
-        detail_frame.pack(fill=tk.BOTH, expand=True, pady=(4, 8))
+        # 减少垂直占用空间，为错误分析区域腾出位置
+        detail_frame.pack(fill=tk.BOTH, expand=False, pady=(4, 4))
         self._result_box = scrolledtext.ScrolledText(
-            detail_frame, height=10, width=80, font=("Consolas", 9)
+            detail_frame, height=5, width=80, font=("Consolas", 9)
         )
         self._result_box.pack(fill=tk.BOTH, expand=True)
+
+        # 错误信息快速分析（阶段 1：规则识别 + 指南）
+        # 注意：放在 detail_frame 内部，确保小窗口下也能看到按钮，而不需要额外滚动
+        error_frame = ttk.LabelFrame(
+            detail_frame,
+            text="错误信息快速分析（粘贴 OpenClaw 或 Agent 报错）",
+            padding=4,
+        )
+        error_frame.pack(fill=tk.BOTH, expand=False, pady=(6, 0))
+
+        hint = ttk.Label(
+            error_frame,
+            text="将终端或日志中的错误文本粘贴到下面，点击“分析错误”获取解释与排查建议。\n"
+                 "例如：HTTP 400: Invalid request: tool call id write:44 is duplicated",
+            foreground="#666",
+            wraplength=660,
+            justify=tk.LEFT,
+        )
+        hint.pack(anchor=tk.W, pady=(0, 4))
+
+        self._error_input = scrolledtext.ScrolledText(
+            error_frame, height=4, width=80, font=("Consolas", 9)
+        )
+        self._error_input.pack(fill=tk.BOTH, expand=True)
+
+        btn_row = ttk.Frame(error_frame)
+        btn_row.pack(fill=tk.X, pady=(4, 0))
+        ttk.Button(
+            btn_row,
+            text="分析错误",
+            command=self._analyze_error_text,
+        ).pack(side=tk.LEFT)
+        ttk.Button(
+            btn_row,
+            text="清空",
+            command=lambda: self._error_input.delete("1.0", tk.END),
+        ).pack(side=tk.LEFT, padx=(6, 0))
 
         self._last_report = ""
         self._last_results = []
         self._health_score_result = None
+
+    def _analyze_error_text(self):
+        """根据常见模式分析错误信息，给出人话解释与排查建议。"""
+        text = self._error_input.get("1.0", tk.END).strip()
+        if not text:
+            return
+
+        lines = []
+        lower = text.lower()
+
+        # 规则 1：tool call id duplicated
+        if "tool call id" in lower and "duplicated" in lower:
+            lines.append("【问题类型】Tool 调用 ID 重复（tool call id duplicated）")
+            lines.append(
+                "【现象说明】请求被模型/网关拒绝，原因是同一个 tool 调用 ID 被重复使用，"
+                "例如多轮对话里都在使用 write:44 作为调用 ID。"
+            )
+            lines.append(
+                "【排查方向】在对应 Agent/Skill 的代码中，检查是否手动设置了 tool 调用 ID："
+                "\n  - 搜索关键词：tool_call_id、tool_calls、\"write:44\"、\"tool call id\"；"
+                "\n  - 看是否在构造请求时，把上一次响应中的 tool_calls 原样拷贝进新的请求；"
+                "\n  - 或者直接把固定的字符串当作 id 使用。"
+            )
+            lines.append(
+                "【修复建议】不要硬编码 tool 调用 ID，交给 SDK/模型自动生成；"
+                "如果必须自定义 ID，应当在每次调用时生成全新的随机 ID（例如 UUID）。"
+            )
+
+        # 规则 2：context length / token 限制
+        if "context_length_exceeded" in lower or "maximum context length" in lower:
+            lines.append("【问题类型】上下文过长 / 超出 tokens 限制")
+            lines.append(
+                "【现象说明】单次对话携带的历史消息或系统提示过长，超过了当前模型允许的最大上下文窗口。"
+            )
+            lines.append(
+                "【排查方向】检查该 Agent 的系统提示、对话历史保留条数、大块文档注入等，是否一次性塞入过多内容。"
+            )
+            lines.append(
+                "【修复建议】缩短系统提示、裁剪历史消息数量、对长文档先做摘要后再塞入对话。"
+            )
+
+        # 可以在这里持续扩展更多规则（rate limit、auth、网络等）
+
+        if not lines:
+            lines.append("暂未匹配到内置的常见错误模式。")
+            lines.append("建议：")
+            lines.append("1）确认错误是否来自 OpenClaw CLI / Gateway 或某个 Agent 的响应；")
+            lines.append("2）在反馈/提问时附上完整错误文本与相关 Agent 名称，便于进一步分析。")
+
+        text_out = "\n".join(lines)
+        try:
+            if self._result_box.winfo_exists():
+                self._result_box.insert(tk.END, "\n=== 错误分析 ===\n")
+                self._result_box.insert(tk.END, text_out + "\n")
+                self._result_box.see(tk.END)
+        except Exception:
+            pass
 
     def _run_security_suite_action(self, title: str, worker_func):
         """
@@ -1653,11 +1749,12 @@ class DiagnosePanel(BasePanel):
 
     def _build_health_score_section(self):
         """构建健康度评分显示区域"""
-        # 健康度评分框架
+        # 健康度评分框架（压缩高度，为下方区域腾出空间）
         self._health_frame = ttk.LabelFrame(
-            self, text="健康度评分", padding=10
+            self, text="健康度评分", padding=6
         )
-        self._health_frame.pack(fill=tk.X, pady=(0, 10))
+        # 不再使用 expand，让整体区域更紧凑
+        self._health_frame.pack(fill=tk.X, pady=(0, 4))
         
         # 左侧：评分显示
         left_frame = ttk.Frame(self._health_frame)
@@ -1665,14 +1762,14 @@ class DiagnosePanel(BasePanel):
         
         # 大分数显示
         self._health_score_label = ttk.Label(
-            left_frame, text="--", font=("Microsoft YaHei", 36, "bold"),
+            left_frame, text="--", font=("Microsoft YaHei", 24, "bold"),
             foreground="#999"
         )
         self._health_score_label.pack()
         
         # 等级标签
         self._health_grade_label = ttk.Label(
-            left_frame, text="等待诊断", font=("Microsoft YaHei", 12),
+            left_frame, text="等待诊断", font=("Microsoft YaHei", 10),
             foreground="#666"
         )
         self._health_grade_label.pack()
@@ -2599,8 +2696,13 @@ class OpenClawAssistant:
         if CORE_MODULES_AVAILABLE:
             try:
                 self.instance_manager = InstanceManager()
+                # 先加载历史实例，再基于 openclaw.json / workspace 自动发现
                 self.instance_manager.load_instances()
-                print("[核心模块] 实例管理器已初始化")
+                try:
+                    discovered = self.instance_manager.discover_instances()
+                    print(f"[核心模块] 实例管理器已初始化，发现 {len(discovered)} 个实例")
+                except Exception as e:
+                    print(f"[核心模块] 实例自动发现失败（已忽略）：{e}")
             except Exception as e:
                 print(f"[核心模块] 实例管理器初始化失败: {e}")
             
