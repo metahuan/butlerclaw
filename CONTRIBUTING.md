@@ -1,176 +1,98 @@
-# Contributing to Butlerclaw
+# 🚀 贡献者指南
 
-First off, thank you for considering contributing to Butlerclaw! It's people like you that make Butlerclaw such a great tool.
+感谢你对 Butlerclaw 的兴趣！我们欢迎各种形式的贡献。
 
-## Code of Conduct
+## 🧱 开发环境
 
-This project and everyone participating in it is governed by our commitment to:
-- Being respectful and inclusive
-- Welcoming newcomers
-- Focusing on constructive feedback
-- Prioritizing user experience
-
-## How Can I Contribute?
-
-### Reporting Bugs
-
-Before creating bug reports, please check the existing issues to see if the problem has already been reported. When you are creating a bug report, please include as many details as possible:
-
-- **Use a clear and descriptive title**
-- **Describe the exact steps to reproduce the problem**
-- **Provide specific examples to demonstrate the steps**
-- **Describe the behavior you observed and what behavior you expected**
-- **Include screenshots if applicable**
-- **Specify your environment:**
-  - Operating system and version
-  - Python version
-  - Node.js version (if applicable)
-  - Butlerclaw version
-
-### Suggesting Enhancements
-
-Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion, please include:
-
-- **Use a clear and descriptive title**
-- **Provide a step-by-step description of the suggested enhancement**
-- **Provide specific examples to demonstrate the enhancement**
-- **Explain why this enhancement would be useful**
-
-### Pull Requests
-
-1. Fork the repository
-2. Create a new branch from `main` for your feature or bug fix
-3. Make your changes
-4. Run the tests locally
-5. Update documentation as needed
-6. Submit a pull request
-
-#### Pull Request Process
-
-1. Ensure your code follows the existing code style
-2. Update the README.md or relevant documentation with details of changes if applicable
-3. Add tests for any new functionality
-4. Ensure all tests pass
-5. Your PR will be reviewed by maintainers who may request changes
-
-## Development Setup
-
-### Prerequisites
-
-- Python 3.8 or higher
-- Node.js 18+ (for testing OpenClaw integration)
-- Git
-
-### Setting Up Your Development Environment
+- **Python**：建议使用 Python 3.8–3.12（推荐 3.11+/与 CI 一致的版本）
+- **依赖安装**：
 
 ```bash
-# Clone your fork
-git clone https://github.com/yourusername/butlerclaw.git
+git clone https://github.com/metahuan/butlerclaw.git
 cd butlerclaw
 
-# Create a virtual environment
 python -m venv venv
+venv\Scripts\activate  # Windows
+# 或
+source venv/bin/activate  # macOS / Linux
 
-# Activate the virtual environment
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# Install development dependencies
 pip install -r requirements-dev.txt
+```
 
-# Run the application in development mode
+启动应用：
+
+```bash
 python openclaw_assistant.py
 ```
 
-### Running Tests
+## 🎯 如何贡献
+
+### 1. 报告 Bug
+
+使用 [Bug Report Template](../issues/new?template=bug_report.md) 提交 Issue。  
+请尽量提供：
+
+- 操作系统、Python 版本、Butlerclaw 版本
+- 复现步骤
+- 期望结果 vs 实际结果
+
+### 2. 提出功能建议
+
+使用 [Feature Request Template](../issues/new?template=feature_request.md) 提交 Issue。  
+建议说明：
+
+- 你的使用场景
+- 目前的痛点
+- 你期望 Butlerclaw 帮你做到什么
+
+### 3. 提交代码
+
+1. Fork 本仓库
+2. 从 `main` 创建你的功能分支（例如：`git checkout -b feat/team-panel-improvement`）
+3. 提交更改（推荐使用类似 `feat: ...` / `fix: ...` / `docs: ...` 的提交信息）
+4. 推送到你的远程分支（`git push origin feat/team-panel-improvement`）
+5. 打开 Pull Request，简要说明改动动机与主要修改点
+
+> PR 在合并前需要通过 CI（测试 + 代码风格检查）。
+
+### 4. 改进文档
+
+文档改进也是重要的贡献！  
+你可以：
+
+- 补充/修正文档内容
+- 优化 README / 安装说明 / 使用指南
+- 翻译或本地化（中英文皆可）
+
+## 📋 代码规范
+
+- 遵循 PEP 8 Python 代码规范
+- 添加适当的文档字符串，解释关键设计或非直观逻辑
+- 避免引入未使用的依赖
+- 在可能的情况下，为新功能补上或更新测试
+
+## 🧪 测试
 
 ```bash
-# Run all tests
-python -m pytest tests/
+# 运行测试
+pytest tests/ -v
 
-# Run specific test file
-python -m pytest tests/test_installer.py
-
-# Run with verbose output
-python -m pytest tests/ -v
+# 检查代码风格
+flake8 .
 ```
 
-## Style Guidelines
+建议在提交 PR 前本地至少跑一遍测试与 flake8。
 
-### Python Code Style
+## 💬 语言与交流
 
-- Follow [PEP 8](https://www.python.org/dev/peps/pep-0008/)
-- Use 4 spaces for indentation
-- Maximum line length of 100 characters
-- Use descriptive variable names
-- Add docstrings to functions and classes
+- Issue / PR 可使用 **中文或英文**  
+- 建议使用英文标题，方便更多开发者快速了解问题/改动
 
-Example:
-```python
-def install_package(package_name: str, version: str = None) -> bool:
-    """
-    Install a package using npm.
-    
-    Args:
-        package_name: Name of the package to install
-        version: Specific version to install (optional)
-        
-    Returns:
-        True if installation succeeded, False otherwise
-    """
-    # Implementation here
-    pass
-```
+## 📞 需要帮助？
 
-### Commit Messages
+- 💬 [GitHub Discussions](../discussions)
+- 🐛 [Issues](../issues)
 
-- Use the present tense ("Add feature" not "Added feature")
-- Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
-- Limit the first line to 72 characters or less
-- Reference issues and pull requests liberally after the first line
+---
 
-Example:
-```
-Add skill search functionality
-
-- Implement fuzzy search for skill names
-- Add keyboard shortcuts for quick access
-- Fixes #123
-```
-
-## Project Structure
-
-```
-butlerclaw/
-├── diagnose/          # Diagnostic tools
-├── security/          # Security-related modules
-├── skills/            # Skill management
-├── tests/             # Test files
-├── ui/                # UI components
-├── web/               # Web interface
-├── web-components/    # Reusable web components
-├── docs/              # Documentation
-└── scripts/           # Build and utility scripts
-```
-
-## Testing Guidelines
-
-- Write tests for new features
-- Ensure existing tests pass before submitting PR
-- Aim for high test coverage on critical paths
-- Use mocking for external dependencies (network, file system)
-
-## Documentation
-
-- Update README.md if you change functionality
-- Add docstrings to new functions and classes
-- Update CHANGELOG.md for notable changes
-- Consider adding examples for complex features
-
-## Questions?
-
-Feel free to open an issue with your question or contact the maintainers.
-
-Thank you for contributing! 🎉
+再次感谢你的贡献！🙏

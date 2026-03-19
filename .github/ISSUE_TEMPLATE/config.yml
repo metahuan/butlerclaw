@@ -1,8 +1,13 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Butlerclaw Community Support
-    url: https://github.com/yourusername/butlerclaw/discussions
-    about: Please ask and answer questions here.
-  - name: Security Vulnerability
-    url: https://github.com/yourusername/butlerclaw/security/advisories/new
-    about: Please report security vulnerabilities here.
+  - name: 💬 Butlerclaw Community Support
+    url: https://github.com/metahuan/butlerclaw/discussions
+    about: 请在这里提问和交流使用经验
+  
+  - name: 📖 查看文档
+    url: https://github.com/metahuan/butlerclaw#readme
+    about: 在提问前请先查看文档
+  
+  - name: 🔒 报告安全漏洞
+    url: https://github.com/metahuan/butlerclaw/security/advisories/new
+    about: 请通过安全公告报告安全相关问题

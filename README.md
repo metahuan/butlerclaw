@@ -1,6 +1,6 @@
 # Butlerclaw
 
-[![CI](https://github.com/<your-github-username>/butlerclaw/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-github-username>/butlerclaw/actions/workflows/ci.yml)
+[![CI](https://github.com/metahuan/butlerclaw/actions/workflows/ci.yml/badge.svg)](https://github.com/metahuan/butlerclaw/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
@@ -13,7 +13,7 @@
 
 ## English
 
-### Overview
+### Overview (Current: v2.0.1)
 
 Butlerclaw is a cross-platform desktop application that simplifies the installation, configuration, and management of OpenClaw. Built with Python and tkinter, it provides an intuitive graphical interface for:
 
@@ -94,12 +94,11 @@ python openclaw_assistant.py
 
 ### Documentation
 
-- [Installation Guide](docs/INSTALLATION.md)
-- [User Manual](docs/USER_MANUAL.md)
-- [API Documentation](docs/API.md)
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [Contributing Guide](CONTRIBUTING.md)
-- [Security Policy](SECURITY.md)
+The detailed documentation is being reorganized for the 2.x series.
+For now, please refer to:
+
+- The in-app tooltips and help texts
+- GitHub Issues / Discussions for usage Q&A
 
 ### Development
 
@@ -158,7 +157,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 中文
 
-### 概述
+### 概述（当前版本：v2.0.1）
 
 Butlerclaw 是一个跨平台桌面应用程序，旨在简化 OpenClaw 的安装、配置和管理。基于 Python 和 tkinter 构建，提供直观的图形界面：
 
@@ -239,11 +238,12 @@ python openclaw_assistant.py
 
 ### 文档
 
-- [安装指南](docs/INSTALLATION.md)
-- [用户手册](docs/USER_MANUAL.md)
-- [API 文档](docs/API.md)
-- [架构说明](docs/ARCHITECTURE.md)
-- [贡献指南](CONTRIBUTING.md)
+2.x 版本的文档正在重新整理中，目前可以通过：
+
+- 应用内的提示与说明
+- GitHub 的 Issues / Discussions
+
+来获取使用指导与常见问题解答。
 
 ### 开发
 
@@ -295,7 +295,7 @@ BUTLERCLAW_GATEWAY_URL=http://你的网关地址:端口
 
 ### 贡献
 
-我们欢迎贡献！详情请参阅我们的[贡献指南](CONTRIBUTING.md)。
+我们欢迎贡献！你可以通过提交 Issue / Pull Request 或在 Discussions 中参与讨论来帮助改进本项目。
 
 ### 开源协议
 
@@ -306,10 +306,10 @@ BUTLERCLAW_GATEWAY_URL=http://你的网关地址:端口
 ## Acknowledgments
 
 - [OpenClaw](https://github.com/openclaw) - The core framework that Butlerclaw manages
-- All our [contributors](https://github.com/<your-github-username>/butlerclaw/graphs/contributors) who make this project possible
+- All our [contributors](https://github.com/metahuan/butlerclaw/graphs/contributors) who make this project possible
 
 ## Support
 
-- 💬 [GitHub Discussions](https://github.com/<your-github-username>/butlerclaw/discussions)
-- 🐛 [Issue Tracker](https://github.com/<your-github-username>/butlerclaw/issues)
-- 📧 Email: <your-support-email>
+- 💬 [GitHub Discussions](https://github.com/metahuan/butlerclaw/discussions)
+- 🐛 [Issue Tracker](https://github.com/metahuan/butlerclaw/issues)
+- 📧 Email: support@butlerclaw.dev

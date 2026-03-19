@@ -34,7 +34,7 @@ This guide covers various methods to install Butlerclaw on your system.
 
 ### Windows
 
-1. Download `Butlerclaw-Windows.exe` from the [releases page](https://github.com/yourusername/butlerclaw/releases)
+1. Download `Butlerclaw-Windows.exe` from the [releases page](https://github.com/metahuan/butlerclaw/releases)
 2. Double-click the downloaded file to run
 3. Windows may show a SmartScreen warning - click "More info" and "Run anyway"
 4. The application will start automatically
@@ -43,7 +43,7 @@ This guide covers various methods to install Butlerclaw on your system.
 
 ```powershell
 # Download using PowerShell
-Invoke-WebRequest -Uri "https://github.com/yourusername/butlerclaw/releases/latest/download/Butlerclaw-Windows.exe" -OutFile "Butlerclaw.exe"
+Invoke-WebRequest -Uri "https://github.com/metahuan/butlerclaw/releases/latest/download/Butlerclaw-Windows.exe" -OutFile "Butlerclaw.exe"
 
 # Run the executable
 .\Butlerclaw.exe
@@ -51,7 +51,7 @@ Invoke-WebRequest -Uri "https://github.com/yourusername/butlerclaw/releases/late
 
 ### macOS
 
-1. Download `Butlerclaw-macOS.dmg` from the [releases page](https://github.com/yourusername/butlerclaw/releases)
+1. Download `Butlerclaw-macOS.dmg` from the [releases page](https://github.com/metahuan/butlerclaw/releases)
 2. Open the DMG file
 3. Drag Butlerclaw to your Applications folder
 4. First launch: Right-click the app and select "Open" (required for apps from unidentified developers)
@@ -64,7 +64,7 @@ brew install butlerclaw
 
 ### Linux
 
-1. Download `Butlerclaw-Linux.tar.gz` from the [releases page](https://github.com/yourusername/butlerclaw/releases)
+1. Download `Butlerclaw-Linux.tar.gz` from the [releases page](https://github.com/metahuan/butlerclaw/releases)
 2. Extract the archive:
    ```bash
    tar -xzf Butlerclaw-Linux.tar.gz
@@ -117,7 +117,7 @@ python -c "import tkinter; print(tkinter.Tcl().eval('info patchlevel'))"
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/butlerclaw.git
+   git clone https://github.com/metahuan/butlerclaw.git
    cd butlerclaw
    ```
 
@@ -155,7 +155,7 @@ pip install -r requirements-build.txt
 
 # Build executable
 # Windows:
-python -m PyInstaller OpenClaw安装助手.spec --clean
+python -m PyInstaller OpenClaw龙虾管家.spec --clean
 
 # macOS:
 chmod +x build_macos.sh
@@ -243,7 +243,7 @@ This is normal for unsigned executables. Click "More info" and "Run anyway" to p
 
 If you encounter issues not covered here:
 
-1. Check the [FAQ](FAQ.md)
-2. Search [existing issues](https://github.com/yourusername/butlerclaw/issues)
-3. Join our [Discussions](https://github.com/yourusername/butlerclaw/discussions)
-4. Create a new issue with details about your problem
+1. Read the [README](../README.md) and in-app help
+2. Search [existing issues](https://github.com/metahuan/butlerclaw/issues)
+3. Ask in [Discussions](https://github.com/metahuan/butlerclaw/discussions)
+4. Open a new [issue](https://github.com/metahuan/butlerclaw/issues/new) with your environment and steps to reproduce
