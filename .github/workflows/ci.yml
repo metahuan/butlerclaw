@@ -86,7 +86,7 @@ jobs:
     - name: Build executable (Windows)
       if: matrix.target == 'windows'
       run: |
-        python -m PyInstaller OpenClaw安装助手.spec --clean
+        python -m PyInstaller openclaw_installer.spec --clean
 
     - name: Build executable (macOS)
       if: matrix.target == 'macos'
