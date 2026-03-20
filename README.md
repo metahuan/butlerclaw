@@ -111,7 +111,7 @@ pytest tests/ -v
 
 # Build executable
 # Windows:
-python -m PyInstaller 
+python -m PyInstaller openclaw_installer.spec --clean
 # macOS:
 ./build_macos.sh
 # Linux:
@@ -137,7 +137,6 @@ payload = {
 resp = call_chat_completions(payload)
 print(resp.get("choices", []))
 ```
-openclaw_installer.spec
 By default it calls `http://127.0.0.1:18789/gateway/chat/completions`. You can override the
 base URL by setting:
 

@@ -14,12 +14,27 @@ a = Analysis(
         # (os.path.join(project_root, 'data'), 'data'),
     ],
     hiddenimports=[
+        # UI/skills (imported dynamically in some places)
         'skills_panel_new',
         'skills_manager',
+        # Tkinter modules used directly
         'tkinter',
         'tkinter.ttk',
         'tkinter.messagebox',
         'tkinter.scrolledtext',
+        # Security center modules. Imported in diagnostics suite; ensure PyInstaller bundles them.
+        'security',
+        'security.models',
+        'security.permission_scanner',
+        'security.skill_scanner',
+        'security.vuln_patcher',
+        'security.vulnerability_db',
+        'security.hardening_engine',
+        'security.key_rotation',
+        'security.alert_manager',
+        'security.vuln_monitor',
+        'security.scoring_system',
+        'security.compliance_checker',
     ],
     hookspath=[],
     hooksconfig={},

@@ -1,6 +1,6 @@
 import enum
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 
 class RiskLevel(enum.Enum):
@@ -30,6 +30,14 @@ class SkillSecurityReport:
     permissions: Optional[str] = None
     network_calls: Optional[str] = None
     file_operations: Optional[str] = None
+    # The following fields are produced by `SkillSecurityScanner` and consumed by
+    # `SecurityScoringSystem` and the UI diagnostics suite.
+    issues_count: int = 0
+    critical_count: int = 0
+    high_count: int = 0
+    medium_count: int = 0
+    signature_valid: bool = False
+    details: Optional[Dict[str, Any]] = None
 
 
 @dataclass

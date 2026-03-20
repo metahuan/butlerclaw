@@ -33,13 +33,33 @@ from .alert_manager import (
     check_security_alerts,
     get_security_summary,
 )
-from .vuln_monitor import (
-    RealtimeVulnMonitor,
-    VulnerabilityAlert,
-    start_vuln_monitoring,
-    check_vulnerabilities,
-    get_vuln_report,
-)
+try:
+    # `vuln_monitor` depends on optional third-party packages (e.g. `schedule`).
+    # Keep the security package importable even if those extras aren't installed,
+    # so diagnostics like PermissionScanner/SkillSecurityScanner can still work.
+    from .vuln_monitor import (
+        RealtimeVulnMonitor,
+        VulnerabilityAlert,
+        start_vuln_monitoring,
+        check_vulnerabilities,
+        get_vuln_report,
+    )
+except ModuleNotFoundError as e:
+    if getattr(e, "name", "") != "schedule":
+        raise
+
+    RealtimeVulnMonitor = None  # type: ignore
+    VulnerabilityAlert = None  # type: ignore
+
+    def _missing_schedule(*_args, **_kwargs):
+        raise ModuleNotFoundError(
+            "security.vuln_monitor requires optional dependency 'schedule'. "
+            "Install it to enable realtime vulnerability monitoring."
+        )
+
+    start_vuln_monitoring = _missing_schedule  # type: ignore
+    check_vulnerabilities = _missing_schedule  # type: ignore
+    get_vuln_report = _missing_schedule  # type: ignore
 from .scoring_system import (
     SecurityScoringSystem,
     SecurityGrade,
