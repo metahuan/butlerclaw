@@ -79,7 +79,7 @@ def _get_openclaw_cmd(self):
 - 简化 `_refresh()` 方法
 - 保留安装/卸载/更新功能（使用智能命令查找）
 
-### OpenClaw安装助手.spec（优化）
+### openclaw_installer.spec（优化）
 - 添加隐藏导入
 - 排除不必要的模块（减小体积）
 - 优化打包配置

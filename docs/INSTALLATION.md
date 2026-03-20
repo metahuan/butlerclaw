@@ -155,7 +155,7 @@ pip install -r requirements-build.txt
 
 # Build executable
 # Windows:
-python -m PyInstaller OpenClaw龙虾管家.spec --clean
+python -m PyInstaller openclaw_installer.spec --clean
 
 # macOS:
 chmod +x build_macos.sh

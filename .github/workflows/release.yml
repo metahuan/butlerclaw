@@ -52,7 +52,7 @@ jobs:
           - os: windows-latest
             target: windows
             asset_name: Butlerclaw-Windows.exe
-            asset_path: dist/OpenClaw安装助手.exe
+            asset_path: dist/Butlerclaw龙虾管家.exe
           - os: macos-latest
             target: macos
             asset_name: Butlerclaw-macOS.zip
@@ -79,7 +79,7 @@ jobs:
     - name: Build executable (Windows)
       if: matrix.target == 'windows'
       run: |
-        python -m PyInstaller OpenClaw安装助手.spec --clean
+        python -m PyInstaller openclaw_installer.spec --clean
 
     - name: Build executable (macOS)
       if: matrix.target == 'macos'

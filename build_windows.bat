@@ -35,7 +35,7 @@ if exist "build" rmdir /s /q "build"
 if exist "dist" rmdir /s /q "dist"
 
 echo [3/3] 开始打包（仅打包当前平台：Windows）...
-%PYCMD% -m PyInstaller --noconfirm "OpenClaw安装助手.spec"
+%PYCMD% -m PyInstaller --noconfirm "openclaw_installer.spec"
 if errorlevel 1 (
     echo [错误] 打包失败
     goto :end
@@ -44,7 +44,7 @@ if errorlevel 1 (
 echo [4/4] 完成
 echo.
 echo 输出目录: dist\
-echo 可执行文件: dist\OpenClaw安装助手.exe
+echo 可执行文件: dist\Butlerclaw龙虾管家.exe
 echo.
 
 :end

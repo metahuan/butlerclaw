@@ -40,7 +40,7 @@ if errorlevel 1 (
 )
 
 echo [4/5] 开始打包（产品级配置）...
-%PYCMD% -m PyInstaller --noconfirm "OpenClaw安装助手.spec"
+%PYCMD% -m PyInstaller --noconfirm "openclaw_installer.spec"
 if errorlevel 1 (
     echo [错误] 打包失败
     goto :end
@@ -52,7 +52,7 @@ echo OpenClaw 安装助手
 echo ===================
 echo.
 echo 使用说明：
-echo 1. 双击运行 "OpenClaw安装助手.exe"
+echo 1. 双击运行 "Butlerclaw龙虾管家.exe"
 echo 2. 首次使用需要安装 OpenClaw
 echo 3. 技能管理功能可直接使用，无需额外配置
 echo.
@@ -75,7 +75,7 @@ echo   打包完成！
 echo ========================================
 echo.
 echo 输出目录: dist\
-echo 可执行文件: dist\OpenClaw安装助手.exe
+echo 可执行文件: dist\Butlerclaw龙虾管家.exe
 echo 产品文档: dist\README.txt
 echo.
 echo 发布前检查清单：

@@ -39,7 +39,7 @@ def build_windows():
     
     # Build executable
     result = subprocess.run(
-        [sys.executable, "-m", "PyInstaller", "OpenClaw安装助手.spec", "--clean"],
+        [sys.executable, "-m", "PyInstaller", "openclaw_installer.spec", "--clean"],
         capture_output=True,
         text=True
     )
@@ -50,7 +50,7 @@ def build_windows():
         return False
     
     print("✓ Windows build complete")
-    print(f"  Output: dist/OpenClaw安装助手.exe")
+    print(f"  Output: dist/Butlerclaw龙虾管家.exe")
     return True
 
 
@@ -113,7 +113,7 @@ def create_packages():
     packages_dir.mkdir(exist_ok=True)
     
     # Package Windows executable
-    windows_exe = dist_dir / "OpenClaw安装助手.exe"
+    windows_exe = dist_dir / "Butlerclaw龙虾管家.exe"
     if windows_exe.exists():
         shutil.copy(windows_exe, packages_dir / "Butlerclaw-Windows.exe")
         print("✓ Created Butlerclaw-Windows.exe")
